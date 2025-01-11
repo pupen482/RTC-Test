@@ -1,16 +1,5 @@
 #include "rtc.h"
 
-
-#define ALARM_DATE 0x20241215        
-#define ALARM_TIME 0x12559           
-#define ALARM_FLAGS 0x0              
-#define CALIBRATION_VALUE 9          
-#define INITIAL_TIME 0x12345         
-#define INITIAL_DATE 0x20241215      
-#define WAIT_CYCLES 1000             
-#define SECONDS_TO_WAIT 0x96         
-#define TIMER_ADJUST 100                    
-
 int main(int argc, char** argv) {
     Verilated::commandArgs(argc, argv);
 
@@ -18,39 +7,48 @@ int main(int argc, char** argv) {
 
     rtc.reset();
 
-    rtc.set_timer(SECONDS_TO_WAIT);
+    uint32_t timer_period = 0x96;
+    rtc.set_timer(timer_period);
 
-    rtc.set_alarm(ALARM_DATE, ALARM_TIME, ALARM_FLAGS);
+    uint32_t alarm_date = 0x20241215;
+    uint32_t alarm_time = 0x12559;
+    uint32_t alarm_flags = 0x0;
+    rtc.set_alarm(alarm_date, alarm_time, alarm_flags);
 
-    rtc.calibrate(CALIBRATION_VALUE);
+    uint32_t calibration_value = 9;
+    rtc.calibrate(calibration_value);
 
-    rtc.set_time(INITIAL_TIME);
-    rtc.set_date(INITIAL_DATE);
+    uint32_t initial_time = 0x12345;
+    uint32_t initial_date = 0x20241215;
+    rtc.set_time(initial_time);
+    rtc.set_date(initial_date);
+    rtc.print_time(); 
 
     uint32_t start_time = rtc.get_time();
 
-    rtc.wait_clk(WAIT_CYCLES);
+    uint32_t wait_cycles = 1000;
+    rtc.wait_clk(wait_cycles);
 
     uint32_t end_time = rtc.get_time();
 
-    std::cout << "Start Time: " << std::hex << start_time << std::endl;
-    std::cout << "End Time: " << std::hex << end_time << std::endl;
 
     start_time = rtc.time_to_sec(start_time);
     end_time = rtc.time_to_sec(end_time);
 
     //checking the time account
-    assert(end_time == start_time + TIMER_ADJUST);
+    assert(end_time == start_time + 100 && "Time is not correct");
 
     //alarm check
-    bool alarm = rtc.wait_alarm(ALARM_DATE, ALARM_TIME);
-    assert(alarm == true);
+    bool alarm = rtc.wait_alarm(alarm_date, alarm_time);
+    assert(alarm == true && "Alarm is not correct");
 
-    rtc.wait_clk(WAIT_CYCLES);
+    rtc.wait_clk(100);
 
     //timer check
-    bool timer = rtc.wait_timer(SECONDS_TO_WAIT);
-    assert(timer == true);
+    bool timer = rtc.wait_timer(timer_period);
+    assert(timer == true && "Timer is not correct");
+
+    rtc.print_time(); 
 
     return 0;
 }

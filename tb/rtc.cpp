@@ -139,7 +139,7 @@ bool RTC::wait_alarm(uint32_t date, uint32_t time) {
     while (true) {
         wait_clk_posedge();
         if ((get_date() == date) && (get_time() == time)) {
-            if(top-> event_o){
+            if(top-> event_o && (top -> event_flag_o && 0x1 )){
                 return true;
             }
             return false;
@@ -157,7 +157,6 @@ void RTC::set_timer(uint32_t time) {
     wait_clk_posedge();
     wait_clk_posedge();
     top->timer_update_i = 0;
-
 
 }
 
@@ -179,4 +178,19 @@ bool RTC::wait_timer(uint32_t time) {
         }
         cnt++;
     }
+}
+
+void RTC::print_time() {
+    uint32_t time = get_time();
+    uint32_t date = get_date();
+    int hour = (time >> 16) & 0xFF;
+    int minute = (time >> 8) & 0xFF;
+    int second = time & 0xFF;
+
+    int year = (date >> 16) & 0xFFFF;
+    int month = (date >> 8) & 0xFF;
+    int day = date & 0xFF;
+
+    std::cout << "Date: " <<std::hex << year << "-" << month << "-" << day
+              << " Time: " << hour << ":" << minute << ":" << second << std::endl;
 }

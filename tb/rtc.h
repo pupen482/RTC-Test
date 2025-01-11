@@ -38,6 +38,7 @@ public:
     bool wait_alarm(uint32_t date, uint32_t time);
     void set_timer(uint32_t time);
     bool wait_timer(uint32_t time);
+    void print_time();
 
     void run_cycles(int cycles);
     void wait_clk(int cycles);
