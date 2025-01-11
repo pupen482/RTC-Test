@@ -139,8 +139,11 @@ bool RTC::wait_alarm(uint32_t date, uint32_t time) {
     while (true) {
         wait_clk_posedge();
         if ((get_date() == date) && (get_time() == time)) {
-            if(top-> event_o && (top -> event_flag_o && 0x1 )){
-                return true;
+            if(top-> event_o){
+                wait_clk_posedge();
+                if((top -> event_flag_o && 0x1 )){
+                    return true;
+                }
             }
             return false;
         }

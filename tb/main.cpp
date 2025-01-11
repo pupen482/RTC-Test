@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
     end_time = rtc.time_to_sec(end_time);
 
     //checking the time account
-    assert(end_time == start_time + 100 && "Time is not correct");
+    assert(end_time == start_time +(wait_cycles/(calibration_value + 1)) && "Time is not correct");
 
     //alarm check
     bool alarm = rtc.wait_alarm(alarm_date, alarm_time);
