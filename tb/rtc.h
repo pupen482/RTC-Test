@@ -3,7 +3,9 @@
 
 #include "Vrtc_top.h"      
 #include <verilated.h>
-#include <verilated_vcd_c.h> 
+#ifdef VM_TRACE
+#include <verilated_vcd_c.h>
+#endif 
 #include <cstdint>
 #include <iostream>
 #include <thread>

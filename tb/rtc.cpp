@@ -10,7 +10,7 @@ RTC::RTC(bool enable_vcd) : clk_running(false), sim_time(0) {
         Verilated::traceEverOn(true);            
         vcd = new VerilatedVcdC();
         top->trace(vcd, 99);                    
-        vcd->open("rtc_trace.vcd");             
+        vcd->open("output.vcd");             
     } else {
         vcd = nullptr;
     }

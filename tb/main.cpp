@@ -3,7 +3,7 @@
 int main(int argc, char** argv) {
     Verilated::commandArgs(argc, argv);
 
-    RTC rtc(true);
+    RTC rtc(VM_TRACE);
 
     rtc.reset();
 
@@ -50,5 +50,8 @@ int main(int argc, char** argv) {
 
     rtc.print_time(); 
 
+    #ifdef ENABLE_COVERAGE
+    Verilated::threadContextp()->coveragep()->write("logs/coverage.dat");
+    #endif
     return 0;
 }

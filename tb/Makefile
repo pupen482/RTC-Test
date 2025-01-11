@@ -1,5 +1,5 @@
 ifneq ($(words $(CURDIR)),1)
- $(error Unsupported: GNU Make cannot build in directories containing spaces, build elsewhere: '$(CURDIR)')
+  $(error Unsupported: GNU Make cannot build in directories containing spaces, build elsewhere: '$(CURDIR)')
 endif
 
 # Add multithreading
@@ -34,6 +34,7 @@ endif
 ###############################################################################
 
 OUTPUT_DIR       ?= tb_output
+ENABLE_COVERAGE  ?= 1  
 
 VERILATOR_FLAGS ?=
 # Generate C++ in executable form
@@ -42,14 +43,16 @@ VERILATOR_FLAGS += -cc --exe
 #VERILATOR_FLAGS += -MMD
 # Optimize
 VERILATOR_FLAGS += --x-assign 0
-# Warn abount lint issues; may not want this on less solid designs
+# Warn about lint issues; may not want this on less solid designs
 VERILATOR_FLAGS += -Wall
 # Make waveforms
 VERILATOR_FLAGS += --trace
 # Check SystemVerilog assertions
 VERILATOR_FLAGS += --assert
 # Generate coverage analysis
-VERILATOR_FLAGS += --coverage
+ifeq ($(ENABLE_COVERAGE),1)
+    VERILATOR_FLAGS += --coverage
+endif
 
 VERILATOR_FLAGS += --trace
 VERILATOR_FLAGS += -j -D
@@ -65,15 +68,16 @@ VERILATOR_INPUT ?=
 VERILATOR_INPUT = ../rtc/rtl/rtc_top.sv ../rtc/rtl/rtc_clock.sv ../rtc/rtl/rtc_date.sv main.cpp rtc.cpp
 
 ######################################################################
-VERILATOR_COV_FLAGS ?=
 # Create annotated source
-VERILATOR_COV_FLAGS += --annotate logs/annotated
-# A single coverage hit is considered good enough
-VERILATOR_COV_FLAGS += --annotate-min 1
-# Create LCOV info
-VERILATOR_COV_FLAGS += --write-info logs/coverage.info
-# Input file from Verilator
-VERILATOR_COV_FLAGS += logs/coverage.dat
+ifeq ($(ENABLE_COVERAGE),1)
+    VERILATOR_COV_FLAGS += --annotate logs/annotated
+    # A single coverage hit is considered good enough
+    VERILATOR_COV_FLAGS += --annotate-min 1
+    # Create LCOV info
+    VERILATOR_COV_FLAGS += --write-info logs/coverage.info
+    # Input file from Verilator
+    VERILATOR_COV_FLAGS += logs/coverage.dat
+endif
 
 ######################################################################
 default: run
@@ -92,6 +96,13 @@ run:
 	@mkdir -p logs
 	$(OUTPUT_DIR)/Vrtc_top
 
+ifeq ($(ENABLE_COVERAGE),1)
+	@echo
+	@echo "-- COVERAGE ----------------"
+	@rm -rf logs/annotated
+	$(VERILATOR_COVERAGE) $(VERILATOR_COV_FLAGS)
+endif
+
 	@echo
 	@echo "-- DONE --------------------"
 
@@ -103,10 +114,16 @@ show-config:
 	$(VERILATOR) -V
 
 genhtml:
+ifeq ($(ENABLE_COVERAGE),1)
 	@echo "-- GENHTML --------------------"
 	@echo "-- Note not installed by default, so not in default rule"
 	$(GENHTML) logs/coverage.info --output-directory logs/html
+else
+	@echo "Coverage is disabled. Skipping GENHTML."
+endif
 
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
 	-rm -rf $(OUTPUT_DIR) logs *.log *.dmp *.vpd core
+	-rm -rf *.vcd
+
