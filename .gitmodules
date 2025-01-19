@@ -1,0 +1,6 @@
+[submodule "rtc/rtl/common_cells"]
+	path = rtc/rtl/common_cells
+	url = https://github.com/pulp-platform/common_cells.git
+[submodule "rtc/rtl/apb_pulp"]
+	path = rtc/rtl/apb_pulp
+	url = git@github.com:YarosLove91/apb_pulp.git
