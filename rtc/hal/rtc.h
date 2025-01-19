@@ -27,6 +27,7 @@ typedef struct {
 #define RTC_DATE_DATA_SHIFT           (0U)
 #define RTC_DATE_DATA(x)              (((uint32_t)(((uint32_t)(x)) /* << RTC_DATE_DATA_SHIFT */)) & RTC_DATE_DATA_MASK)
 
+
 /*! @name CLOCK - Clock calendar register */
 #define RTC_CLOCK_DATA_MASK           (0x3FFFFF)
 #define RTC_CLOCK_DATA_SHIFT          (0U)
@@ -40,21 +41,12 @@ typedef struct {
 #define RTC_CLOCK_INIT_SEC_CNT_SHIFT  (0U)
 #define RTC_CLOCK_INIT_SEC_CNT(x)     (((uint32_t)(((uint32_t)(x)) << RTC_CLOCK_INIT_SEC_CNT_SHIFT)) & RTC_CLOCK_INIT_SEC_CNT_MASK)
 
-/*! @name TIMER - Timer count down register */
-#define RTC_TIMER_CMP_MASK            (0x1FFFF)
-#define RTC_TIMER_CMP_SHIFT           (0U)
-#define RTC_TIMER_CMP(x)              (((uint32_t)(((uint32_t)(x)) /* << RTC_TIMER_CMP_SHIFT */)) & RTC_TIMER_CMP_MASK)
-#define RTC_TIMER_RETRIG_MASK         (0x40000000)
-#define RTC_TIMER_RETRIG_SHIFT        (30U)
-#define RTC_TIMER_RETRIG(x)           (((uint32_t)(((uint32_t)(x)) << RTC_TIMER_RETRIG_SHIFT)) & RTC_TIMER_RETRIG_MASK)
-#define RTC_TIMER_EN_MASK             (0x80000000)
-#define RTC_TIMER_EN_SHIFT            (31U)
-#define RTC_TIMER_EN(x)               (((uint32_t)(((uint32_t)(x)) << RTC_TIMER_EN_SHIFT)) & RTC_TIMER_EN_MASK)
 
 /*! @name ALARM_DATE - Date register */
 #define RTC_ALARM_DATE_DATA_MASK      (0xFFFFFFFF)
 #define RTC_ALARM_DATE_DATA_SHIFT     (0U)
 #define RTC_ALARM_DATE_DATA(x)        (((uint32_t)(((uint32_t)(x)) /* << RTC_ALARM_DATE_DATA_SHIFT */)) & RTC_ALARM_DATE_DATA_MASK)
+
 
 /*! @name ALARM_CLOCK - Timer count down register */
 #define RTC_ALARM_CLOCK_DATA_MASK     (0x3FFFFF)
@@ -68,6 +60,19 @@ typedef struct {
 #define RTC_ALARM_CLOCK_EN_MASK       (0x80000000)
 #define RTC_ALARM_CLOCK_EN_SHIFT      (31U)
 #define RTC_ALARM_CLOCK_EN(x)         (((uint32_t)(((uint32_t)(x)) << RTC_ALARM_CLOCK_EN_SHIFT)) & RTC_ALARM_CLOCK_EN_MASK)
+
+
+/*! @name TIMER - Timer count down register */
+#define RTC_TIMER_CMP_MASK            (0x1FFFF)
+#define RTC_TIMER_CMP_SHIFT           (0U)
+#define RTC_TIMER_CMP(x)              (((uint32_t)(((uint32_t)(x)) /* << RTC_TIMER_CMP_SHIFT */)) & RTC_TIMER_CMP_MASK)
+#define RTC_TIMER_RETRIG_MASK         (0x40000000)
+#define RTC_TIMER_RETRIG_SHIFT        (30U)
+#define RTC_TIMER_RETRIG(x)           (((uint32_t)(((uint32_t)(x)) << RTC_TIMER_RETRIG_SHIFT)) & RTC_TIMER_RETRIG_MASK)
+#define RTC_TIMER_EN_MASK             (0x80000000)
+#define RTC_TIMER_EN_SHIFT            (31U)
+#define RTC_TIMER_EN(x)               (((uint32_t)(((uint32_t)(x)) << RTC_TIMER_EN_SHIFT)) & RTC_TIMER_EN_MASK)
+
 
 /*! @name EVENT_FLAG - Timer and alarm event flag register */
 #define RTC_EVENT_FLAG_ALARM_MASK     (0x1)
@@ -90,9 +95,6 @@ typedef struct {
 #define RTC_BASE_ADDRS                         { RTC_BASE }
 /** Array initializer of RTC base pointers */
 #define RTC_BASE_PTRS                          { RTC }
-
-
-
 
 
 
