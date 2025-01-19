@@ -150,7 +150,7 @@ module rtc_clock (
              if (event_flag_update_i)
                begin
                   if (event_flag_i[0])
-                    r_event_flag[0] <= 1'b0;
+                    r_event_flag[0] <= 1'b0; // TODO: remove this logic cause apb_regs have w1c reg
 
                   if (event_flag_i[1])
                     r_event_flag[1] <= 1'b0;
