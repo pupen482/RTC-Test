@@ -25,7 +25,7 @@ VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
 else
 export VERILATOR_ROOT
-VERILATOR = $(z)/bin/verilator
+VERILATOR = verilator
 VERILATOR_COVERAGE = $(VERILATOR_ROOT)/bin/verilator_coverage
 endif
 
@@ -58,6 +58,11 @@ VERILATOR_FLAGS += --trace
 VERILATOR_FLAGS += -j -D
 # Run make to compile model, with as many CPUs as are free
 VERILATOR_FLAGS += --build -j
+
+VERILATOR_FLAGS += -Wno-fatal
+VERILATOR_FLAGS += +incdir+../rtc/rtl/common_cells/include
+VERILATOR_FLAGS += +incdir+../rtc/rtl/apb_pulp/include
+VERILATOR_FLAGS += --top rtc_apb_sim
 # Run Verilator in debug mode
 #VERILATOR_FLAGS += --debug
 # Add this trace to get a backtrace in gdb
@@ -65,7 +70,9 @@ VERILATOR_FLAGS += --build -j
 
 VERILATOR_INPUT ?=
 # Input files for Verilator
-VERILATOR_INPUT = ../rtc/rtl/rtc_top.sv ../rtc/rtl/rtc_clock.sv ../rtc/rtl/rtc_date.sv main.cpp rtc.cpp
+# VERILATOR_INPUT = ../rtc/rtl/rtc_apb.sv ../rtc/rtl/apb_ ../rtc/rtl/rtc_top.sv ../rtc/rtl/rtc_clock.sv ../rtc/rtl/rtc_date.sv main.cpp rtc.cpp
+VERILATOR_INPUT = -f rtc_apb.f
+
 
 ######################################################################
 # Create annotated source
@@ -94,7 +101,7 @@ run:
 	@echo "-- RUN ---------------------"
 	@rm -rf logs
 	@mkdir -p logs
-	$(OUTPUT_DIR)/Vrtc_top
+	$(OUTPUT_DIR)/Vrtc_apb_sim
 
 ifeq ($(ENABLE_COVERAGE),1)
 	@echo

@@ -34,9 +34,22 @@ int main(int argc, char** argv) {
 
     start_time = rtc.time_to_sec(start_time);
     end_time = rtc.time_to_sec(end_time);
+    
 
     //checking the time account
-    assert(end_time == start_time +(wait_cycles/(calibration_value + 1)) && "Time is not correct");
+    if (end_time == start_time + (wait_cycles/(calibration_value + 1)))
+    {
+        std::cout << "Check [0] - OK" << std::endl;
+    }
+    else
+    {
+        std::cout << "Check [0] - FAIL" << std::endl;
+        std::cout << "Time is not correct:" << std::endl;
+        std::cout << "start_time: 0x" << start_time << std::hex << " end_time: 0x" << end_time << std::hex << std::endl;
+        rtc.wait_clk(10);
+        return 1;
+    }
+    // assert(end_time == start_time + (wait_cycles/(calibration_value + 1)) && "Time is not correct");
 
     //alarm check
     bool alarm = rtc.wait_alarm(alarm_date, alarm_time);
