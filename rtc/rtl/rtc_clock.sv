@@ -1,43 +1,32 @@
 module rtc_clock (
-                  input logic         clk_i,
-                  input logic         rstn_i,
-
-                  input logic         clock_update_i,
-                  output logic [21:0] clock_o,
-                  input logic [21:0]  clock_i,
-
-                  input logic [9:0]   init_sec_cnt_i,
-
-                  input logic         calibre_update_i,
-                  input logic [15:0]  calibre_sec_cnt_i,
-                  output logic [15:0] calibre_sec_cnt_o,
-
-                  input logic         timer_update_i,
-                  input logic         timer_enable_i,
-                  input logic         timer_retrig_i,
-                  input logic [16:0]  timer_target_i,
-                  output logic [16:0] timer_value_o,
-
-                  input logic         alarm_enable_i,
-                  input logic [5:0]   alarm_mask_i,
-                  input logic         alarm_update_clock_i,
-                  input logic [21:0]  alarm_clock_i,
-                  output logic [21:0] alarm_clock_o,
-
-                  input logic         alarm_update_date_i,
-                  /* verilator lint_off UNUSEDSIGNAL */
-                  input logic [31:0]  alarm_date_i,
-                  output logic [31:0] alarm_date_o,
-
-                  input logic [31:0]  date_i,
-
-                  input logic         event_flag_update_i,
-                  input logic [1:0]   event_flag_i ,
-                  output logic [1:0]  event_flag_o,
-                  output logic        event_o,
-
-                  output logic        update_day_o
-                  );
+  input  logic        clk_i               ,
+  input  logic        rstn_i              ,
+  input  logic        clock_update_i      ,
+  output logic [21:0] clock_o             ,
+  input  logic [21:0] clock_i             ,
+  input  logic [ 9:0] init_sec_cnt_i      ,
+  input  logic        calibre_update_i    ,
+  input  logic [15:0] calibre_sec_cnt_i   ,
+  output logic [15:0] calibre_sec_cnt_o   ,
+  input  logic        timer_update_i      ,
+  input  logic        timer_enable_i      ,
+  input  logic        timer_retrig_i      ,
+  input  logic [16:0] timer_target_i      ,
+  output logic [16:0] timer_value_o       ,
+  input  logic        alarm_enable_i      ,
+  input  logic [ 5:0] alarm_mask_i        ,
+  input  logic        alarm_update_clock_i,
+  input  logic [21:0] alarm_clock_i       ,
+  output logic [21:0] alarm_clock_o       ,
+  input  logic        alarm_update_date_i ,
+  /* verilator lint_off UNUSEDSIGNAL */
+  input  logic [31:0] alarm_date_i        ,
+  output logic [31:0] alarm_date_o        ,
+  input  logic [31:0] date_i              ,
+  output logic        timer_flag          ,
+  output logic        alarm_flag          ,
+  output logic        update_day_o
+);
 
    logic [7:0]                        r_seconds;
    logic [7:0]                        r_minutes;
@@ -93,8 +82,6 @@ module rtc_clock (
    logic                              r_timer_en;
    logic                              r_timer_retrig;
 
-   logic [1:0]                        r_event_flag;
-
    assign s_seconds = clock_i[7:0];
    assign s_minutes = clock_i[15:8];
    assign s_hours   = clock_i[21:16];
@@ -130,7 +117,11 @@ module rtc_clock (
    assign s_update_minutes = s_update_seconds & (r_seconds == 8'h59);
    assign s_update_hours   = s_update_minutes & (r_minutes == 8'h59);
 
-   assign event_o        = s_alarm_event | s_timer_event;
+   always_comb begin : event_flags_assign
+      timer_flag = s_timer_event;
+      alarm_flag = s_alarm_event;
+   end
+
    assign update_day_o   = s_update_hours & (r_hours == 6'h23);
    assign clock_o        = {r_hours,r_minutes,r_seconds};
    assign alarm_clock_o  = {r_alarm_hours,r_alarm_minutes,r_alarm_seconds};
@@ -138,33 +129,6 @@ module rtc_clock (
 
    assign timer_value_o     = r_timer;
    assign calibre_sec_cnt_o = r_sec_cnt_calibre;
-   assign event_flag_o      = r_event_flag;
-
-
-   always @ (posedge clk_i or negedge rstn_i)
-     begin
-        if(~rstn_i)
-          r_event_flag <= 'h0;
-        else
-          begin
-             if (event_flag_update_i)
-               begin
-                  if (event_flag_i[0])
-                    r_event_flag[0] <= 1'b0; // TODO: remove this logic cause apb_regs have w1c reg
-
-                  if (event_flag_i[1])
-                    r_event_flag[1] <= 1'b0;
-               end // if (event_flag_update_i)
-             else if (s_alarm_event)
-               begin
-                  r_event_flag[0] <= 1'b1;
-               end
-             else if (s_timer_event)
-               begin
-                  r_event_flag[1] <= 1'b1;
-               end
-          end
-     end
 
    always @ (posedge clk_i or negedge rstn_i)
      begin
